@@ -2,6 +2,7 @@ package com.franndelgado.payment_transactions_api.service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,8 @@ import com.franndelgado.payment_transactions_api.dto.TransactionDTO;
 import com.franndelgado.payment_transactions_api.entity.Transaction;
 import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
 import com.franndelgado.payment_transactions_api.repository.TransactionRepository;
+
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -20,6 +23,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional
     public TransactionDTO createTransaction(TransactionDTO transactionDTO) {
 
         Transaction newTransaction = new Transaction();
@@ -27,7 +31,7 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setUserId(transactionDTO.getUserId());
         newTransaction.setAmount(transactionDTO.getAmount());
         newTransaction.setCurrency(transactionDTO.getCurrency());
-        newTransaction.setStatus(transactionDTO.getStatus());
+        newTransaction.setStatus(TransactionStatus.values()[new Random().nextInt(TransactionStatus.values().length)]);
         newTransaction.setCreatedAt(Instant.now());
         newTransaction.setBankCode(transactionDTO.getBankCode());
         newTransaction.setRecipientAccount(transactionDTO.getRecipientAccount());
