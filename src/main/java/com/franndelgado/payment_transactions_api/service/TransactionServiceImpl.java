@@ -2,6 +2,8 @@ package com.franndelgado.payment_transactions_api.service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
@@ -51,8 +53,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public TransactionStatus getTransactionStatus(String transactionId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTransactionStatus'");
+        Transaction transaction = transactionRepository.findById(transactionId)
+        .orElseThrow(() -> new NoSuchElementException("Transaction Id: " + transactionId + " not exist."));
+        
+        return transaction.getStatus();
     }
 
     @Override

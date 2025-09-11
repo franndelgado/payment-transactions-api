@@ -34,16 +34,15 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTransaction);
     }
     
-    @GetMapping("/status/{transaction_id}")
-    public ResponseEntity<TransactionStatus> getTransactionStatus(@PathVariable String transaction_id) {
-        TransactionStatus status = transactionService.getTransactionStatus(transaction_id);
-        return ResponseEntity.ok(status);
+    @GetMapping("/status/{transactionId}")
+    public ResponseEntity<TransactionStatus> getTransactionStatus(@PathVariable String transactionId) {
+        TransactionStatus status = transactionService.getTransactionStatus(transactionId);
+        return ResponseEntity.status(HttpStatus.OK).body(status);
     }
     
     @GetMapping("/approved")
-    public ResponseEntity<List<TransactionDTO>> getApprovedTransactionsByUserId(@RequestParam String user_id) {
-        List<TransactionDTO> transactions = transactionService.getApprovedTransactionsByUserId(user_id);
+    public ResponseEntity<List<TransactionDTO>> getApprovedTransactionsByUserId(@RequestParam String userId) {
+        List<TransactionDTO> transactions = transactionService.getApprovedTransactionsByUserId(userId);
         return ResponseEntity.ok(transactions);
     }
-    
 }
