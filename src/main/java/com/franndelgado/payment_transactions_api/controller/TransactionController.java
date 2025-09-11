@@ -2,6 +2,7 @@ package com.franndelgado.payment_transactions_api.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,7 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<TransactionDTO> createTransaction(@RequestBody TransactionDTO transactionDTO) {
         TransactionDTO createdTransaction = transactionService.createTransaction(transactionDTO);
-        return ResponseEntity.ok(createdTransaction);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTransaction);
     }
     
     @GetMapping("/status/{transaction_id}")
