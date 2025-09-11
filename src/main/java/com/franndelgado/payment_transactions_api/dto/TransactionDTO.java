@@ -8,11 +8,13 @@ import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class TransactionDTO {
 
     @JsonProperty("transaction_id")
