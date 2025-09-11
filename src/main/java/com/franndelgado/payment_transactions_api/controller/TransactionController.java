@@ -13,6 +13,8 @@ import com.franndelgado.payment_transactions_api.dto.TransactionDTO;
 import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
 import com.franndelgado.payment_transactions_api.service.TransactionService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,19 +30,19 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<TransactionDTO> createTransaction(@RequestBody TransactionDTO transactionDTO) {
+    public ResponseEntity<TransactionDTO> createTransaction(@Valid @RequestBody TransactionDTO transactionDTO) {
         TransactionDTO createdTransaction = transactionService.createTransaction(transactionDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTransaction);
     }
     
     @GetMapping("/status/{transactionId}")
-    public ResponseEntity<TransactionStatus> getTransactionStatus(@PathVariable String transactionId) {
+    public ResponseEntity<TransactionStatus> getTransactionStatus(@Valid @PathVariable String transactionId) {
         TransactionStatus status = transactionService.getTransactionStatus(transactionId);
         return ResponseEntity.status(HttpStatus.OK).body(status);
     }
     
     @GetMapping("/approved")
-    public ResponseEntity<List<TransactionDTO>> getApprovedTransactionsByUserId(@RequestParam String userId) {
+    public ResponseEntity<List<TransactionDTO>> getApprovedTransactionsByUserId(@Valid @RequestParam String userId) {
         List<TransactionDTO> transactions = transactionService.getApprovedTransactionsByUserId(userId);
         return ResponseEntity.status(HttpStatus.OK).body(transactions);
     }
