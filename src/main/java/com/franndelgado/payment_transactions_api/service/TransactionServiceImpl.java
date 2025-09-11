@@ -3,8 +3,8 @@ package com.franndelgado.payment_transactions_api.service;
 import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -40,29 +40,37 @@ public class TransactionServiceImpl implements TransactionService {
 
         Transaction savedTransaction = transactionRepository.save(newTransaction);
 
-        return new TransactionDTO(
-            savedTransaction.getTransactionId(),
-            savedTransaction.getUserId(),
-            savedTransaction.getAmount(),
-            savedTransaction.getCurrency(),
-            savedTransaction.getStatus(),
-            savedTransaction.getCreatedAt(),
-            savedTransaction.getBankCode(),
-            savedTransaction.getRecipientAccount());
+        return mapToDTO(savedTransaction);
     }
 
     @Override
     public TransactionStatus getTransactionStatus(String transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId)
         .orElseThrow(() -> new NoSuchElementException("Transaction Id: " + transactionId + " not exist."));
-        
+
         return transaction.getStatus();
     }
 
     @Override
     public List<TransactionDTO> getApprovedTransactionsByUserId(String userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getApprovedTransactionsByUserId'");
+
+        List<Transaction> transactions = transactionRepository.findByUserIdAndStatus(userId, TransactionStatus.APPROVED);
+       
+        return transactions.stream()
+            .map(this::mapToDTO)
+            .collect(Collectors.toList());
     }
 
+    private TransactionDTO mapToDTO(Transaction transaction) {
+        TransactionDTO dto = new TransactionDTO();
+        dto.setTransactionId(transaction.getTransactionId());
+        dto.setUserId(transaction.getUserId());
+        dto.setAmount(transaction.getAmount());
+        dto.setCurrency(transaction.getCurrency());
+        dto.setStatus(transaction.getStatus());
+        dto.setCreatedAt(transaction.getCreatedAt());
+        dto.setBankCode(transaction.getBankCode());
+        dto.setRecipientAccount(transaction.getRecipientAccount());
+        return dto;
+    }
 }

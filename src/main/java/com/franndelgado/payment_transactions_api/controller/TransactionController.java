@@ -25,7 +25,6 @@ public class TransactionController {
 
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
-   
     }
 
     @PostMapping
@@ -43,6 +42,6 @@ public class TransactionController {
     @GetMapping("/approved")
     public ResponseEntity<List<TransactionDTO>> getApprovedTransactionsByUserId(@RequestParam String userId) {
         List<TransactionDTO> transactions = transactionService.getApprovedTransactionsByUserId(userId);
-        return ResponseEntity.ok(transactions);
+        return ResponseEntity.status(HttpStatus.OK).body(transactions);
     }
 }
