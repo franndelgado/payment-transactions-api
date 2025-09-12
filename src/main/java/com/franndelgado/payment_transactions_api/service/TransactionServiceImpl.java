@@ -2,7 +2,6 @@ package com.franndelgado.payment_transactions_api.service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.franndelgado.payment_transactions_api.dto.TransactionDTO;
 import com.franndelgado.payment_transactions_api.entity.Transaction;
 import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
+import com.franndelgado.payment_transactions_api.exceptions.TransactionIdNotFoundException;
 import com.franndelgado.payment_transactions_api.exceptions.TransactionUserIdNotFoundException;
 import com.franndelgado.payment_transactions_api.repository.TransactionRepository;
 
@@ -47,7 +47,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionStatus getTransactionStatus(String transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId)
-        .orElseThrow(() -> new NoSuchElementException("Transaction Id: " + transactionId + " not exist."));
+        .orElseThrow(() -> new TransactionIdNotFoundException(transactionId));
 
         return transaction.getStatus();
     }

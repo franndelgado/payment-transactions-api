@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/transactions")
+@Validated
 public class TransactionController {
 
     private final TransactionService transactionService;
@@ -36,9 +38,9 @@ public class TransactionController {
     }
     
     @GetMapping("/status/{transactionId}")
-    public ResponseEntity<TransactionStatus> getTransactionStatus(@Valid @PathVariable String transactionId) {
+    public ResponseEntity<TransactionStatus> getTransactionStatus(@PathVariable String transactionId) {
         TransactionStatus status = transactionService.getTransactionStatus(transactionId);
-        return ResponseEntity.status(HttpStatus.OK).body(status);
+        return ResponseEntity.ok(status);
     }
     
     @GetMapping("/approved")

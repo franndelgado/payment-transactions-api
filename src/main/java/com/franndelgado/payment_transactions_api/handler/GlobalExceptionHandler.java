@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.franndelgado.payment_transactions_api.exceptions.TransactionIdNotFoundException;
 import com.franndelgado.payment_transactions_api.exceptions.TransactionUserIdNotFoundException;
 
 @RestControllerAdvice
@@ -31,6 +32,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TransactionUserIdNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleTransactionUserIdNotFound(TransactionUserIdNotFoundException ex){
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+    }
+
+    @ExceptionHandler(TransactionIdNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleTransactionIdNotFound(TransactionIdNotFoundException ex){
         Map<String, String> errors = new HashMap<>();
         errors.put("error", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
