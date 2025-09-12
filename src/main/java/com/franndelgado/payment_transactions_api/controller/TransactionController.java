@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.franndelgado.payment_transactions_api.dto.TransactionDTO;
+import com.franndelgado.payment_transactions_api.dto.TransactionRequest;
 import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
 import com.franndelgado.payment_transactions_api.service.TransactionService;
 
@@ -17,7 +18,6 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -42,8 +42,8 @@ public class TransactionController {
     }
     
     @GetMapping("/approved")
-    public ResponseEntity<List<TransactionDTO>> getApprovedTransactionsByUserId(@Valid @RequestParam String userId) {
-        List<TransactionDTO> transactions = transactionService.getApprovedTransactionsByUserId(userId);
+    public ResponseEntity<List<TransactionDTO>> getApprovedTransactionsByUserId(@Valid TransactionRequest transactionRequest) {
+        List<TransactionDTO> transactions = transactionService.getApprovedTransactionsByUserId(transactionRequest.getUserId());
         return ResponseEntity.status(HttpStatus.OK).body(transactions);
     }
 }

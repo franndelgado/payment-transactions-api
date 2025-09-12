@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.franndelgado.payment_transactions_api.dto.TransactionDTO;
 import com.franndelgado.payment_transactions_api.entity.Transaction;
 import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
+import com.franndelgado.payment_transactions_api.exceptions.TransactionUserIdNotFoundException;
 import com.franndelgado.payment_transactions_api.repository.TransactionRepository;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -54,8 +55,16 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<TransactionDTO> getApprovedTransactionsByUserId(String userId) {
 
+        if(userId == null || userId.isEmpty()) {
+            throw new IllegalArgumentException("User Id is missing.");
+        }
+
         List<Transaction> transactions = transactionRepository.findByUserIdAndStatus(userId, TransactionStatus.APPROVED);
-       
+        
+        if (transactions.isEmpty()) {
+            throw new TransactionUserIdNotFoundException(userId);
+        }
+           
         return transactions.stream()
             .map(this::mapToDTO)
             .collect(Collectors.toList());
