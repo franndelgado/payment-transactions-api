@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.franndelgado.payment_transactions_api.dto.TransactionDTO;
@@ -15,18 +14,18 @@ import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
 import com.franndelgado.payment_transactions_api.exceptions.TransactionIdNotFoundException;
 import com.franndelgado.payment_transactions_api.exceptions.TransactionUserIdNotFoundException;
 import com.franndelgado.payment_transactions_api.repository.TransactionRepository;
+import com.franndelgado.payment_transactions_api.constants.TransactionServiceConstants;
 
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-    @Autowired
-    private CurrencyServiceImpl currencyService;
-
+    private final CurrencyService currencyService;
     private final TransactionRepository transactionRepository;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(CurrencyService currencyService,TransactionRepository transactionRepository) {
+        this.currencyService = currencyService;
         this.transactionRepository = transactionRepository;
     }
 
@@ -39,13 +38,13 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setUserId(transactionDTO.getUserId());
 
         BigDecimal finalAmount;
-        if (!"ARS".equals(transactionDTO.getCurrency())) {
+        if (!TransactionServiceConstants.CURRENCY_ARS.equals(transactionDTO.getCurrency())) {
             finalAmount = currencyService.convertCurrencyToArs(transactionDTO.getCurrency(),transactionDTO.getAmount());
         } else {
             finalAmount = transactionDTO.getAmount();
         }
         newTransaction.setAmount(finalAmount);
-        newTransaction.setCurrency("ARS");
+        newTransaction.setCurrency(TransactionServiceConstants.CURRENCY_ARS);
         newTransaction.setStatus(TransactionStatus.values()[new Random().nextInt(TransactionStatus.values().length)]);
         newTransaction.setCreatedAt(Instant.now());
         newTransaction.setBankCode(transactionDTO.getBankCode());
@@ -68,7 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<TransactionDTO> getApprovedTransactionsByUserId(String userId) {
 
         if(userId == null || userId.isEmpty()) {
-            throw new IllegalArgumentException("User Id is missing.");
+            throw new IllegalArgumentException(TransactionServiceConstants.MISSING_USER_ID_ERROR);
         }
 
         List<Transaction> transactions = transactionRepository.findByUserIdAndStatus(userId, TransactionStatus.APPROVED);
