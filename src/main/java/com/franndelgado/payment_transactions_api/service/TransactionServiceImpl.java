@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.franndelgado.payment_transactions_api.dto.TransactionDTO;
+import com.franndelgado.payment_transactions_api.dto.TransactionRequestDTO;
+import com.franndelgado.payment_transactions_api.dto.TransactionResponseDTO;
 import com.franndelgado.payment_transactions_api.entity.Transaction;
 import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
 import com.franndelgado.payment_transactions_api.exceptions.TransactionIdNotFoundException;
@@ -31,7 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public TransactionDTO createTransaction(TransactionDTO transactionDTO) {
+    public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionDTO) {
 
         Transaction newTransaction = new Transaction();
         
@@ -64,7 +65,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionDTO> getApprovedTransactionsByUserId(String userId) {
+    public List<TransactionResponseDTO> getApprovedTransactionsByUserId(String userId) {
 
         if(userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException(TransactionServiceConstants.MISSING_USER_ID_ERROR);
@@ -81,8 +82,8 @@ public class TransactionServiceImpl implements TransactionService {
             .collect(Collectors.toList());
     }
 
-    private TransactionDTO mapToDTO(Transaction transaction) {
-        TransactionDTO dto = new TransactionDTO();
+    private TransactionResponseDTO mapToDTO(Transaction transaction) {
+        TransactionResponseDTO dto = new TransactionResponseDTO();
         dto.setTransactionId(transaction.getTransactionId());
         dto.setUserId(transaction.getUserId());
         dto.setAmount(transaction.getAmount());
