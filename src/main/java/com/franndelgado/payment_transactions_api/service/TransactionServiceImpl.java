@@ -2,9 +2,7 @@ package com.franndelgado.payment_transactions_api.service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -17,6 +15,10 @@ import com.franndelgado.payment_transactions_api.exceptions.TransactionUserIdNot
 import com.franndelgado.payment_transactions_api.repository.TransactionRepository;
 import com.franndelgado.payment_transactions_api.constants.TransactionServiceConstants;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -57,6 +59,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public TransactionStatus getTransactionStatus(String transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId)
         .orElseThrow(() -> new TransactionIdNotFoundException(transactionId));
@@ -65,21 +68,24 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionResponseDTO> getApprovedTransactionsByUserId(String userId) {
+    @Transactional(readOnly = true)
+    public Page<TransactionResponseDTO> getApprovedTransactionsByUserId(String userId, int page, int size, String sort) {
+        
+        String[] sortParams = sort.split(",");
+        Sort sortObj = Sort.by(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
+        Pageable pageable = PageRequest.of(page, size, sortObj);
 
         if(userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException(TransactionServiceConstants.MISSING_USER_ID_ERROR);
         }
 
-        List<Transaction> transactions = transactionRepository.findByUserIdAndStatus(userId, TransactionStatus.APPROVED);
+        Page<Transaction> transactions = transactionRepository.findByUserIdAndStatus(userId, TransactionStatus.APPROVED, pageable);
         
         if (transactions.isEmpty()) {
             throw new TransactionUserIdNotFoundException(userId);
         }
            
-        return transactions.stream()
-            .map(this::mapToDTO)
-            .collect(Collectors.toList());
+        return transactions.map(this::mapToDTO);
     }
 
     private TransactionResponseDTO mapToDTO(Transaction transaction) {
