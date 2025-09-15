@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import com.franndelgado.payment_transactions_api.dto.TransactionDTO;
+import com.franndelgado.payment_transactions_api.dto.TransactionResponseDTO;
 import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,9 +27,9 @@ public interface TransactionApi {
         @ApiResponse(responseCode = "201", description = "Transaction created successfully"),
         @ApiResponse(responseCode = "400", description = "Bad Request")
     })
-    ResponseEntity<TransactionDTO> createTransaction(
+    ResponseEntity<TransactionResponseDTO> createTransaction(
             @Parameter(description = "Transaction data to create") 
-            @RequestBody TransactionDTO transactionDTO);
+            @RequestBody TransactionResponseDTO transactionDTO);
 
     @Operation(summary = "Check the status of a transaction", 
                description = "Check the status of a transaction by the Transaction Id.")
@@ -47,5 +47,5 @@ public interface TransactionApi {
         @ApiResponse(responseCode = "200", description = "Successfully obtained"),
         @ApiResponse(responseCode = "404", description = "Not found")
     }) 
-    ResponseEntity<List<TransactionDTO>> getApprovedTransactionsByUserId(@RequestParam String userId);
+    ResponseEntity<List<TransactionResponseDTO>> getApprovedTransactionsByUserId(@RequestParam String userId);
 }
