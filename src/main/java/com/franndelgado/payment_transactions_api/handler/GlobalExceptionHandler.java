@@ -57,10 +57,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
-        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+    
+        for(ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+            String fieldName = violation.getPropertyPath().toString();
             String message = violation.getMessage();
-            errors.put("transactionId", message);
+            errors.put(fieldName, message);
         }
+        
         return ResponseEntity.badRequest().body(errors);
     }
 }

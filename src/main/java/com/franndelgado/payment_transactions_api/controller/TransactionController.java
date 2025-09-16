@@ -21,7 +21,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -70,8 +72,8 @@ public class TransactionController {
     })
     @GetMapping("/approved")
     public ResponseEntity<Page<TransactionResponseDTO>> getApprovedTransactionsByUserId(@Valid TransactionRequest transactionRequest, 
-                                                                                        @RequestParam(defaultValue = "0") int page,
-                                                                                        @RequestParam(defaultValue = "10") int size,
+                                                                                        @RequestParam(defaultValue = "0") @Min(0) int page,
+                                                                                        @RequestParam(defaultValue = "10") @Positive int size,
                                                                                         @RequestParam(defaultValue = "createdAt,desc") String sort) {
         Page<TransactionResponseDTO> transactions = transactionService.getApprovedTransactionsByUserId(transactionRequest.getUserId(), page, size, sort);
         return ResponseEntity.status(HttpStatus.OK).body(transactions);
