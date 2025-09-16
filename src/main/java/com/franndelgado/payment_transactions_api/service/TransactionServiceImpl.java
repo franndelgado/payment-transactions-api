@@ -80,20 +80,19 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional(readOnly = true)
     public Page<TransactionResponseDTO> getApprovedTransactionsByUserId(String userId, int page, int size, String sort) {
         
-        String[] sortParams = sort.split(",");
+        if (userId == null || userId.isEmpty()) {
+            throw new IllegalArgumentException(TransactionServiceConstants.MISSING_USER_ID_ERROR);
+        }
+        if (!transactionRepository.existsByUserId(userId)) {
+            throw new TransactionUserIdNotFoundException(userId);
+        }
+        
+        String[] sortParams = (sort != null && sort.contains(",")) ? sort.split(",") : new String[]{"createdAt", "DESC"};
         Sort sortObj = Sort.by(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
         Pageable pageable = PageRequest.of(page, size, sortObj);
 
-        if(userId == null || userId.isEmpty()) {
-            throw new IllegalArgumentException(TransactionServiceConstants.MISSING_USER_ID_ERROR);
-        }
-
         Page<Transaction> transactions = transactionRepository.findByUserIdAndStatus(userId, TransactionStatus.APPROVED, pageable);
-        
-        if (transactions.isEmpty()) {
-            throw new TransactionUserIdNotFoundException(userId);
-        }
-           
+
         return transactions.map(this::mapToDTO);
     }
 

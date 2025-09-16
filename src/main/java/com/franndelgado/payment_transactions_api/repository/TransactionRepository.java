@@ -11,4 +11,5 @@ import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
     Page<Transaction> findByUserIdAndStatus(String userId, TransactionStatus status, Pageable pageable);
+    boolean existsByUserId(String userId);
 }
