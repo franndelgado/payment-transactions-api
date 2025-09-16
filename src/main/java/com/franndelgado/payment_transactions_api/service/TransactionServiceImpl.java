@@ -37,6 +37,15 @@ public class TransactionServiceImpl implements TransactionService {
         this.paymentMethodFactory = paymentMethodFactory;
     }
 
+    /**
+     * <b>POST Method:</b><br>
+     * This method receives a TransactionRequestDTO, converts the amount to ARS if the currency is different, 
+     * assigns a random status and saves the transaction to the database.
+     * Finally returns a TransactionResponseDTO.
+     *
+     * @param transactionDTO
+     * @return transactionResponseDTO
+     */    
     @Override
     @Transactional
     public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionDTO) {
@@ -67,6 +76,15 @@ public class TransactionServiceImpl implements TransactionService {
         return mapToDTO(savedTransaction);
     }
 
+    /**
+     * <b>GET Method:</b><br>
+     * This method receives a Transaction Identifier, finds it in the database, 
+     * and returns the status of the transaction.
+     * Throws TransactionIdNotFoundException if the transaction Id does not exist.
+     *
+     * @param transactionId
+     * @return TransactionStatus
+     */
     @Override
     @Transactional(readOnly = true)
     public TransactionStatus getTransactionStatus(String transactionId) {
@@ -76,6 +94,18 @@ public class TransactionServiceImpl implements TransactionService {
         return transaction.getStatus();
     }
 
+    /**
+     * <b>GET Method:</b><br>
+     * This method receives a User Identifier with pageable options, finds it in the database,
+     * and returns all the approved transactions of the user.
+     * Throws TransactionUserIdNotFoundException if the userId does not exist.
+     *
+     * @param userId
+     * @param page
+     * @param size
+     * @param sort
+     * @return Page<TransactionResponseDTO>
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<TransactionResponseDTO> getApprovedTransactionsByUserId(String userId, int page, int size, String sort) {
@@ -86,7 +116,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (!transactionRepository.existsByUserId(userId)) {
             throw new TransactionUserIdNotFoundException(userId);
         }
-        
+
         String[] sortParams = (sort != null && sort.contains(",")) ? sort.split(",") : new String[]{"createdAt", "DESC"};
         Sort sortObj = Sort.by(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
         Pageable pageable = PageRequest.of(page, size, sortObj);
@@ -96,6 +126,12 @@ public class TransactionServiceImpl implements TransactionService {
         return transactions.map(this::mapToDTO);
     }
 
+    /**
+     * This helper method maps a Transaction entity to a TransactionResponseDTO,
+     * and returns it.
+     * @param transaction
+     * @return TransactionResponseDTO
+     */
     private TransactionResponseDTO mapToDTO(Transaction transaction) {
         TransactionResponseDTO dto = new TransactionResponseDTO();
         dto.setTransactionId(transaction.getTransactionId());

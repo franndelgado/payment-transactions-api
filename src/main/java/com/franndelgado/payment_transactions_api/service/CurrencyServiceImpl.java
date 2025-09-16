@@ -8,6 +8,14 @@ import com.franndelgado.payment_transactions_api.constants.CurrencyServiceConsta
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
 
+    /**
+     * This method receives a currency and an amount,
+     * if the currency is already ARS, it returns the original amount.
+     * Otherwise, the amount is multiplied by the conversion rate to ARS.
+     * @param currency
+     * @param amount
+     * @return BigDecimal
+     */
     @Override
     public BigDecimal convertCurrencyToArs(String currency, BigDecimal amount) {
 
@@ -16,6 +24,11 @@ public class CurrencyServiceImpl implements CurrencyService {
         return amount.multiply(getConversionRate(currency));
     }
 
+    /**
+     * This helper method returns the conversion rate from the specified currency to ARS.
+     * @param originCurrency
+     * @return BigDecimal
+     */
     private BigDecimal getConversionRate(String originCurrency) {
 
         originCurrency = originCurrency.toUpperCase();
