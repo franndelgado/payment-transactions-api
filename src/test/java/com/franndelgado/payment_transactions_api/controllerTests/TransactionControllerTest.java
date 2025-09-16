@@ -63,7 +63,8 @@ public class TransactionControllerTest {
             new BigDecimal("250.00"),
             "EUR",
             "BANK123",
-            "DE89370400440532013000"
+            "DE89370400440532013000",
+            "bank_transfer"
         );
         
         TransactionResponseDTO expectedResponse = new TransactionResponseDTO(

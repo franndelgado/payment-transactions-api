@@ -36,6 +36,8 @@ import com.franndelgado.payment_transactions_api.exceptions.TransactionUserIdNot
 import com.franndelgado.payment_transactions_api.repository.TransactionRepository;
 import com.franndelgado.payment_transactions_api.service.CurrencyService;
 import com.franndelgado.payment_transactions_api.service.TransactionServiceImpl;
+import com.franndelgado.payment_transactions_api.service.payment.PaymentMethod;
+import com.franndelgado.payment_transactions_api.service.payment.PaymentMethodFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class TransactionServiceImplTest {
@@ -49,36 +51,48 @@ public class TransactionServiceImplTest {
     @InjectMocks
     private TransactionServiceImpl transactionService;
 
+    @Mock
+    private PaymentMethodFactory paymentMethodFactory;
+
+    @Mock
+    private PaymentMethod paymentMethod;
+
     @Test
     @DisplayName("Should create a transaction converting the currency to ARS and save it.")
     void shouldCreateTransactionSuccessfullyWhenCurrencyIsNotARS() {
-
+        
         TransactionRequestDTO transactionDTO = new TransactionRequestDTO();
         transactionDTO.setUserId("113411");
         transactionDTO.setAmount(new BigDecimal("123.00"));
         transactionDTO.setCurrency("EUR");
         transactionDTO.setBankCode("BANK123");
         transactionDTO.setRecipientAccount("DE89370400440532013000");
+        transactionDTO.setPaymentType("BANK_TRANSFER");
 
         when(currencyService.convertCurrencyToArs("EUR", new BigDecimal("123.00"))).thenReturn(new BigDecimal("209838"));
 
-       Transaction savedTransaction = new Transaction(
-            "1234", 
-            "113411", 
-            new BigDecimal("209838"), 
-            "ARS", 
-            TransactionStatus.APPROVED, 
-            Instant.now(), 
-            "BANK123", 
-            "DE89370400440532013000"
-        );
+        when(paymentMethodFactory.createPaymentMethod("BANK_TRANSFER")).thenReturn(paymentMethod);
 
+        when(paymentMethod.processPayment(any(Transaction.class))).thenReturn(true);
+
+        Transaction savedTransaction = new Transaction(
+            "1234",
+            "113411",
+            new BigDecimal("209838"),
+            "ARS",
+            TransactionStatus.APPROVED,
+            Instant.now(),
+            "BANK123",
+            "DE89370400440532013000",
+            "BANK_TRANSFER"
+        );
         when(transactionRepository.save(any(Transaction.class))).thenReturn(savedTransaction);
 
         TransactionResponseDTO result = transactionService.createTransaction(transactionDTO);
 
         assertNotNull(result);
         assertEquals("113411", result.getUserId());
+        verify(transactionRepository).save(any(Transaction.class));
     }
 
     @Test
@@ -91,7 +105,10 @@ public class TransactionServiceImplTest {
         transactionDTO.setCurrency("ARS");
         transactionDTO.setBankCode("BANK123");
         transactionDTO.setRecipientAccount("DE89370400440532013000");
+        transactionDTO.setPaymentType("BANK_TRANSFER");
 
+        when(paymentMethodFactory.createPaymentMethod("BANK_TRANSFER")).thenReturn(paymentMethod);
+        when(paymentMethod.processPayment(any(Transaction.class))).thenReturn(true);
 
        Transaction savedTransaction = new Transaction(
             "1234", 
@@ -101,7 +118,8 @@ public class TransactionServiceImplTest {
             TransactionStatus.APPROVED, 
             Instant.now(), 
             "BANK123", 
-            "DE89370400440532013000"
+            "DE89370400440532013000",
+            "BANK_TRANSFER"
         );
 
         when(transactionRepository.save(any(Transaction.class))).thenReturn(savedTransaction);
@@ -126,7 +144,8 @@ public class TransactionServiceImplTest {
             TransactionStatus.APPROVED, 
             Instant.now(), 
             "BANK123", 
-            "DE89370400440532013000"
+            "DE89370400440532013000",
+            "bank_transfer"
         );
         
         when(transactionRepository.findById(transaction.getTransactionId())).thenReturn(Optional.of(transaction));
@@ -162,7 +181,8 @@ public class TransactionServiceImplTest {
             TransactionStatus.APPROVED, 
             Instant.now(), 
             "BANK123", 
-            "DE89370400440532013000"
+            "DE89370400440532013000",
+            "bank_transfer"
         );
 
         String[] sortParams = sort.split(",");
