@@ -9,7 +9,7 @@
 ## Tabla de Contenidos
 
 1. [Tecnologías y Herramientas](#tecnologías-y-herramientas)  
-2. [Servicios Involucrados](#servicios-involucrados)  
+2. [Componentes Involucrados](#componentes-involucrados)  
 3. [Instalación](#instalación)  
 4. [Base de datos H2](#Base-de-datos-H2)
 5. [Diagrama de Arquitectura](#diagrama-de-arquitectura)
@@ -179,7 +179,8 @@ ejecutar los distintos endpoints mencionados.
 ---
 ## Documentación Swagger
 
-Una vez levantado el proyecto se puede visualizar su documentación Swagger en el link: http://localhost:8080/swagger-ui/index.html#
+- Una vez levantado el proyecto se puede visualizar su documentación Swagger en el link: http://localhost:8080/swagger-ui/index.html#
+- También está disponible en formato JSON en: (http://localhost:8080/v3/api-docs)
 ---
 ## Pruebas y Cobertura
 - Framework de pruebas: JUnit y Mockito
