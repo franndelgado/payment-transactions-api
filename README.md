@@ -49,7 +49,10 @@ git clone https://github.com/franndelgado/payment-transactions-api
 cd payment-transactions-api
 ```
 
-Luego abrir el proyecto en un Entorno de Desarrollo (IDE) como VS Code y ejecutarlo.
+Luego abrir el proyecto en un Entorno de Desarrollo (IDE) como VS Code y ejecutarlo con el comando:
+```bash
+./mvnw spring-boot:run
+```
 
 ---
 
