@@ -41,4 +41,6 @@ public class Transaction {
     private String bankCode;
 
     private String recipientAccount;
+
+    private String paymentType;
 }

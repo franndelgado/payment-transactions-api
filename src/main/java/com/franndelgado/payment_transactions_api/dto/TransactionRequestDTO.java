@@ -50,4 +50,7 @@ public class TransactionRequestDTO {
     @NotBlank(message = "Recipient account is required.")
     @JsonProperty("recipient_account")
     private String recipientAccount;
+
+    @JsonProperty("payment_type")
+    private String paymentType = "BANK_TRANSFER";
 }

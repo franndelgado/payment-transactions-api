@@ -13,6 +13,8 @@ import com.franndelgado.payment_transactions_api.enums.TransactionStatus;
 import com.franndelgado.payment_transactions_api.exceptions.TransactionIdNotFoundException;
 import com.franndelgado.payment_transactions_api.exceptions.TransactionUserIdNotFoundException;
 import com.franndelgado.payment_transactions_api.repository.TransactionRepository;
+import com.franndelgado.payment_transactions_api.service.payment.PaymentMethod;
+import com.franndelgado.payment_transactions_api.service.payment.PaymentMethodFactory;
 import com.franndelgado.payment_transactions_api.constants.TransactionServiceConstants;
 
 import org.springframework.data.domain.Pageable;
@@ -26,10 +28,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final CurrencyService currencyService;
     private final TransactionRepository transactionRepository;
+    private final PaymentMethodFactory paymentMethodFactory;
 
-    public TransactionServiceImpl(CurrencyService currencyService,TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(CurrencyService currencyService,TransactionRepository transactionRepository,
+        PaymentMethodFactory paymentMethodFactory) {
         this.currencyService = currencyService;
         this.transactionRepository = transactionRepository;
+        this.paymentMethodFactory = paymentMethodFactory;
     }
 
     @Override
@@ -52,7 +57,11 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setCreatedAt(Instant.now());
         newTransaction.setBankCode(transactionDTO.getBankCode());
         newTransaction.setRecipientAccount(transactionDTO.getRecipientAccount());
+        newTransaction.setPaymentType(transactionDTO.getPaymentType());
 
+        PaymentMethod paymentMethod = paymentMethodFactory.createPaymentMethod(transactionDTO.getPaymentType());
+        paymentMethod.processPayment(newTransaction);
+        
         Transaction savedTransaction = transactionRepository.save(newTransaction);
 
         return mapToDTO(savedTransaction);
